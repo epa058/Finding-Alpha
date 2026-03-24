@@ -1,3 +1,3 @@
 # Skill-based gambling
 
-[Bruh](FindingAlpha.png)
+![Bruh](FindingAlpha.png)

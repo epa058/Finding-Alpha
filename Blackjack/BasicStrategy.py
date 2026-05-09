@@ -93,7 +93,7 @@ class Blackjack:
             value -= 10
             num_aces -= 1
 
-        is_soft = num_aces > 0 and value <= 21
+        is_soft = (num_aces > 0)
         return value, is_soft
 
     def is_pair(self, hand):
@@ -118,7 +118,7 @@ class Blackjack:
             move = self.strategy_soft.get(player_value, self.strategy_hard.get(player_value, 'H'))[dealer_value]
 
         else: # Hard total
-            if player_value > 21: return 'S' 
+            if player_value >= 21: return 'S' 
             move = self.strategy_hard.get(player_value, 'S' if player_value > 16 else 'H')[dealer_value]
 
         if move == 'D' and not can_double_down: return 'H'

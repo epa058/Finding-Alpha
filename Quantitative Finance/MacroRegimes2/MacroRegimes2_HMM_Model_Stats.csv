@@ -1,0 +1,2 @@
+n_states,cov_type,n_obs,n_params,log_likelihood,converged,aic,bic
+3,full,235,278,1943.8983629081051,True,-3331.7967258162103,-2370.031952884134

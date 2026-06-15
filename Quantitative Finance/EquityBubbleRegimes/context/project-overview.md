@@ -69,8 +69,44 @@ qualifying conditions), validated against three known historical bubbles
 `context/progress-tracker.md` for results and findings (including an open
 question about the damping qualifying condition for fast bubbles like GME).
 
+## Hype/Sentiment index prototype — complete
+
+The HLPPL paper's Bubble Score combines the LPPL residual with a **Hype
+Index** (`H_i,t = N_i,t/N_mkt,t`, a stock's share of news attention vs. a
+reference universe; also a cap-adjusted `CapH_i,t`) and a **Sentiment Score**
+(`S_i,t`, FinBERT-based tone). The paper's own data (WSJ corpus + WRDS/CRSP)
+and a reference code repo
+([chirindaopensource/...hyped_log_period_power_law](https://github.com/chirindaopensource/identifying_quantifying_financial_bubbles_hyped_log_period_power_law))
+both require paid News API / WRDS access, so neither was directly usable.
+
+`hype_sentiment.ipynb` instead uses the free, no-API-key
+[GDELT Project](https://www.gdeltproject.org/) DOC 2.0 API:
+- `H_i,t`/`CapH_i,t` are computed from GDELT's daily "Volume Intensity"
+  (article-count share of all worldwide news), normalized across a small
+  reference universe (AAPL, MSFT, TSLA, GME).
+- `S_i,t` is GDELT's daily average article tone, rescaled to `[-1,1]` — a
+  substitute for FinBERT that requires no NLP model.
+
+**Key limitation**: the free DOC API only serves a rolling ~90-day window
+(no historical date ranges), so this is currently a *live/forward-looking*
+signal, not a historical backtest — it cannot yet produce hype/sentiment
+features for the dot-com, GFC, or GME 2021 case studies. Full historical
+coverage (2015+) would require GDELT's BigQuery archive (free GCP tier).
+GDELT's free DOC API also turned out to be far more rate-limited in practice
+than documented. See `context/progress-tracker.md` ("GDELT data source
+decision") for details.
+
+The notebook ran end-to-end over the 85-day window 2026-03-23 to 2026-06-15,
+producing `EquityBubbleRegimes_HypeSentiment_GME_recent90d.csv`
+(`date, N_i, N_mkt, H, CapH, S`). Headline result: `CapH_GME` averages ~12x
+(peaking at ~112x) GME's market-cap weight — a strong, expected meme-stock
+over-hype signal that sanity-checks the pipeline. `S_GME` stays within
+`[-1, 1]` as designed. See `context/progress-tracker.md` for full stats.
+
 ## Status
 
-S&P 500 point-in-time constituents pipeline complete and LPPL fitting
-prototype complete (see above). Sentiment/hype index and dual-stream
-transformer not yet started.
+S&P 500 point-in-time constituents pipeline, LPPL fitting prototype, and
+Hype/Sentiment index prototype (GDELT-based `hype_sentiment.ipynb`, see
+above) are all complete. Next: combine LPPL residuals + hype/sentiment into
+Bubble Score labels. Dual-stream transformer and Bubble Score combination not
+yet started.
